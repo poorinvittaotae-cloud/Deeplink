@@ -12,16 +12,15 @@
   button{border:0;border-radius:999px;padding:11px 16px;font-weight:700;cursor:pointer}
   .primary{background:#111827;color:#fff}
   .ghost{background:#f3f4f6;color:#111827}
-  .ok{color:#059669}
   .hint{font-size:14px;opacity:.85;margin-top:8px}
+  .ok{color:#059669}
   .hide{display:none}
-  a.link{color:inherit}
 </style>
 </head>
 <body>
   <div class="card">
     <h2 style="margin:0 0 6px">เปิดด้วยแอป ReadAWrite</h2>
-    <div id="why" class="hint">ถ้ากดจาก Facebook/LINE แล้วไม่เด้ง ให้ใช้ปุ่มด้านล่าง</div>
+    <div id="why" class="hint">ถ้าอยู่ใน Facebook/LINE แล้วไม่เด้ง ให้กดปุ่มด้านล่าง</div>
 
     <div class="row">
       <button id="openApp" class="primary">เปิดในแอป</button>
@@ -31,110 +30,91 @@
 
     <div id="tips" class="hint"></div>
     <div id="copied" class="hint ok hide">คัดลอกลิงก์แล้ว — วางใน Chrome/Safari เพื่อเปิด</div>
-
-    <!-- ลิงก์เว็บเผื่อบาง in-app ต้องการ <a> ให้กด -->
-    <p class="hint"><a id="directWeb" class="link" href="#" rel="noopener noreferrer">หรือแตะที่นี่เพื่อเปิดหน้าเว็บ</a></p>
   </div>
 
 <script>
-/* ===== CONFIG: ReadAWrite ===== */
+/* ===== CONFIG ===== */
 const SCHEME = "readawrite";
 const ANDROID_PKG = "com.readawrite";
-const IOS_APP_STORE = "https://apps.apple.com/th/app/readawrite/id1033832353";
-const PLAY_STORE_APP = "https://play.google.com/store/apps/details?id=" + ANDROID_PKG;
+const IOS_STORE = "https://apps.apple.com/th/app/readawrite/id1033832353";
+const PLAY_STORE = "https://play.google.com/store/apps/details?id=" + ANDROID_PKG;
 
-/* รับ path ผ่าน ?path=  เช่น ?path=a/<articleId> */
+// ?path=a/<id>
 const qs = new URLSearchParams(location.search);
 const PATH = (qs.get("path") || "a/512604c87af04b0b7d3d02f31a2289be").replace(/^\/+/, "");
 const WEB_URL = "https://www.readawrite.com/" + PATH;
 
-/* ===== Env detect ===== */
+/* ===== UA detect ===== */
 const UA = navigator.userAgent || "";
 const isAndroid = /Android/i.test(UA);
-const isIOS = /iPhone|iPad|iPod/i.test(UA);
-const isFB = /\bFBAN|FBAV\b/i.test(UA);
-const isLINE = /Line/i.test(UA);
-const isIG = /Instagram/i.test(UA);
-const isInApp = isFB || isLINE || isIG;
+const isIOS     = /iPhone|iPad|iPod/i.test(UA);
+const isFB      = /\bFBAN|FBAV\b/i.test(UA);
+const isLINE    = /Line/i.test(UA);
+const isIG      = /Instagram/i.test(UA);
+const isInApp   = isFB || isLINE || isIG;
 
-/* ===== Deep link builders ===== */
+/* ===== helpers ===== */
 const schemeUrl = () => `${SCHEME}://${PATH}`;
-const appIntent = () => `intent://${PATH}#Intent;scheme=${SCHEME};package=${ANDROID_PKG};end`;
+function info(msg){ document.getElementById("tips").textContent = msg || ""; }
+function showCopied(){ const el = document.getElementById("copied"); el.classList.remove("hide"); setTimeout(()=>el.classList.add("hide"),2000); }
 
-/* ===== Actions ===== */
-function openInApp() {
-  if (isAndroid) {
-    // เปิดแอปด้วย intent:// (เฉพาะการเปิดแอปเท่านั้น)
-    location.href = appIntent();
-    // ไม่มีแอป → ไป Play Store
-    setTimeout(()=>{ location.href = PLAY_STORE_APP; }, 1200);
-    return;
-  }
+/* เปิดแอปแบบไม่ใช้ intent:// และยกเลิก fallback หากสลับไปแอปได้จริง */
+function launchByScheme() {
+  let fired = false;
+  const t = setTimeout(()=>{
+    if (fired) return;                    // แอปเปิดสำเร็จ → ไม่ fallback
+    // ไม่เด้ง → ไปสโตร์ก่อน (มีโอกาสติดตั้ง) แล้วผู้ใช้กดกลับก็ยังอยู่หน้านี้
+    location.href = isIOS ? IOS_STORE : PLAY_STORE;
+  }, 1200);
+
+  const onHide = () => { fired = true; clearTimeout(t); document.removeEventListener('visibilitychange', onHide); };
+  document.addEventListener('visibilitychange', ()=>{
+    if (document.visibilityState === 'hidden') onHide();
+  });
+
+  // iOS ใช้ iframe, Android ใช้ location.href ก็ได้ (ทั้งคู่ต้องมาจาก user-gesture)
   if (isIOS) {
-    // ต้องใช้ user gesture บน iOS
-    const iframe = document.createElement("iframe");
-    iframe.style.display = "none";
-    iframe.src = schemeUrl();
+    const iframe = document.createElement('iframe');
+    iframe.style.display='none'; iframe.src = schemeUrl();
     document.body.appendChild(iframe);
-    // ถ้าไม่เด้ง → App Store
-    setTimeout(()=>{ location.href = IOS_APP_STORE; }, 1000);
-    return;
+  } else {
+    // หลีกเลี่ยง intent:// เพื่อไม่ให้เปิด Chrome แล้วขึ้นหน้า "ไม่พบรายการ"
+    location.href = schemeUrl();
   }
-  // Desktop → เปิดเว็บ
-  location.href = WEB_URL;
+}
+
+function openApp() {
+  // ถ้าอยู่ใน in-app บางตัว block auto-redirect → แต่เมื่อกดปุ่มถือเป็น user gesture จึงอนุญาต
+  launchByScheme();
 }
 
 function openWeb() {
-  // ไม่ใช้ intent ไป Chrome เพื่อเลี่ยง "ไม่พบรายการ"
-  // ให้ระบบตัดสินใจเปิดเบราว์เซอร์หลักเอง
   try { window.open(WEB_URL, "_blank", "noopener"); } catch(_) {}
-  // fallback
-  setTimeout(()=>{ location.href = WEB_URL; }, 200);
+  setTimeout(()=>{ location.href = WEB_URL; }, 150);
   if (isIOS && isInApp) {
     info("บน iPhone: แตะ ⋯ หรือ แชร์ แล้วเลือก 'เปิดใน Safari' แล้วค่อยกด 'เปิดในแอป'");
     alert("บน iPhone ให้แตะ ⋯ หรือ แชร์ แล้วเลือก 'Open in Safari'");
   }
 }
 
-async function copyLink() {
-  try {
-    await navigator.clipboard.writeText(location.href);
-    showCopied();
-  } catch (e) {
-    // บาง in-app ไม่ให้ clipboard: ใช้วิธี manual
-    alert("คัดลอกไม่สำเร็จ: แตะค้างที่แถบที่อยู่ แล้วเลือกคัดลอก");
-  }
+async function copyLink(){
+  try { await navigator.clipboard.writeText(location.href); showCopied(); }
+  catch { alert("คัดลอกไม่สำเร็จ: แตะค้างที่แถบที่อยู่แล้วเลือกคัดลอก"); }
 }
 
-/* ===== Helpers ===== */
-function info(msg){ document.getElementById("tips").textContent = msg || ""; }
-function showCopied(){
-  const el = document.getElementById("copied");
-  el.classList.remove("hide");
-  setTimeout(()=>el.classList.add("hide"), 2000);
-}
-function initHints(){
-  if (isInApp && isAndroid) {
-    info("ถ้าไม่เด้ง ให้กด 'เปิดด้วยเบราว์เซอร์หลัก' เพื่อออกจาก Facebook/LINE แล้วค่อยกด 'เปิดในแอป'");
-  } else if (isInApp && isIOS) {
-    info("บน iPhone ให้แตะ ⋯ หรือ แชร์ แล้วเลือก 'เปิดใน Safari' จากนั้นกด 'เปิดในแอป'");
-  } else {
-    info("กำลังพยายามเปิดในแอปอัตโนมัติ… ถ้าไม่เด้ง ให้ใช้ปุ่มด้านบน");
-  }
-}
-function maybeAutoLaunch(){
-  // อยู่นอก in‑app → ลองเด้งอัตโนมัติ
-  if (!isInApp && (isAndroid || isIOS)) setTimeout(openInApp, 350);
-}
+/* hints */
+(function init(){
+  if (isInApp && isAndroid) info("ถ้าไม่เด้ง ให้กด 'เปิดด้วยเบราว์เซอร์หลัก' เพื่อออกจาก Facebook/LINE แล้วค่อยกด 'เปิดในแอป'");
+  else if (isInApp && isIOS) info("บน iPhone ให้แตะ ⋯ หรือ แชร์ แล้วเลือก 'เปิดใน Safari' จากนั้นกด 'เปิดในแอป'");
+  else info("กำลังพยายามเปิดในแอปอัตโนมัติ… ถ้าไม่เด้ง ให้ใช้ปุ่มด้านบน");
+  // อยู่นอก in-app → ลอง auto หลังโหลดสั้น ๆ (ไม่ใช่ intent, จึงไม่ขึ้นหน้าดาว)
+  if (!isInApp && (isAndroid || isIOS)) setTimeout(launchByScheme, 400);
+})();
 
-/* ===== Bind ===== */
-document.getElementById("openApp").addEventListener("click", openInApp);
-document.getElementById("openWeb").addEventListener("click", openWeb);
-document.getElementById("copy").addEventListener("click", copyLink);
-document.getElementById("directWeb").href = WEB_URL;
-
-initHints();
-maybeAutoLaunch();
+/* bind */
+document.getElementById('openApp').addEventListener('click', openApp);
+document.getElementById('openWeb').addEventListener('click', openWeb);
+document.getElementById('copy').addEventListener('click', copyLink);
 </script>
 </body>
 </html>
