@@ -1,26 +1,99 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="th">
 <head>
-<meta charset="UTF-8">
-<title>Open ReadAWrite</title>
-<script>
-  window.onload = function() {
-    // ลิงก์ deep link ของ ReadAWrite (ถ้ามี) — สมมติว่าใช้ schema readawrite://
-    var appUrl = "readawrite://";
-    // ลิงก์เว็บ fallback
-    var webUrl = "https://www.readawrite.com/";
-
-    // พยายามเปิดแอป
-    window.location.href = appUrl;
-
-    // ถ้าเปิดแอปไม่สำเร็จภายใน 1 วินาที ให้เปิดเว็บแทน
-    setTimeout(function() {
-      window.location.href = webUrl;
-    }, 1000);
-  };
-</script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Open in ReadAWrite</title>
+  <style>
+    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial; padding: 16px; line-height: 1.5; }
+    .card { max-width: 640px; margin: 0 auto; padding: 16px; border: 1px solid #e5e7eb; border-radius: 12px; box-shadow: 0 4px 16px rgba(0,0,0,.06); }
+    .row { display:flex; gap:8px; flex-wrap:wrap; margin-top:12px; }
+    button { border:0; border-radius:999px; padding:10px 14px; font-weight:600; cursor:pointer; }
+    .primary { background:#111827; color:#fff; }
+    .ghost { background:#f3f4f6; color:#111827; }
+    .hint { font-size:14px; opacity:.8; margin-top:8px; }
+  </style>
 </head>
 <body>
-กำลังเปิดแอป ReadAWrite...
+  <div class="card">
+    <h2>เปิดด้วยแอป ReadAWrite</h2>
+    <p>ถ้ากดจาก Facebook/LINE แล้วไม่เด้ง ให้กดปุ่มด้านล่างนี้</p>
+    <div class="row">
+      <button id="openApp" class="primary">เปิดในแอป</button>
+      <button id="openBrowser" class="ghost">เปิดด้วยเบราว์เซอร์หลัก</button>
+    </div>
+    <div id="tips" class="hint"></div>
+  </div>
+
+<script>
+  // ===== CONFIG =====
+  const SCHEME = "readawrite";
+  const PKG = "com.readawrite";  // Android package
+  const IOS_APP_STORE = "https://apps.apple.com/th/app/readawrite/id1033832353";
+
+  // รับ path ของบทความผ่าน ?path= เช่น ?path=a/512604c87af04b0b7d3d02f31a2289be
+  const qs = new URLSearchParams(location.search);
+  const PATH = qs.get("path") || "a/512604c87af04b0b7d3d02f31a2289be"; // ค่าเริ่มต้นตัวอย่าง
+  const WEB_URL = "https://www.readawrite.com/" + PATH;
+
+  // ตรวจอุปกรณ์/แอปโซเชียล
+  const ua = navigator.userAgent || "";
+  const isAndroid = /Android/i.test(ua);
+  const isIOS = /iPhone|iPad|iPod/i.test(ua);
+  const isFB = /FBAN|FBAV/i.test(ua);
+  const isLINE = /Line/i.test(ua);
+  const isIG = /Instagram/i.test(ua);
+  const isInApp = isFB || isLINE || isIG;
+
+  // deep link builders
+  function schemeUrl() { return `${SCHEME}://${PATH}`; }
+  function androidAppIntent() {
+    // พยายามเปิดแอปโดยตรง
+    return `intent://${PATH}#Intent;scheme=${SCHEME};package=${PKG};end`;
+  }
+  function androidChromeIntent(url) {
+    // บังคับเปิดด้วย Chrome (หนี in-app browser)
+    const escaped = url.replace(/^https?:\/\//, "");
+    return `intent://${escaped}#Intent;scheme=https;package=com.android.chrome;end`;
+  }
+
+  // Actions
+  function openInApp() {
+    if (isAndroid) {
+      // ใช้ intent:// เพื่อข้ามข้อจำกัด in-app ของ FB/LINE ส่วนใหญ่
+      location.href = androidAppIntent();
+      // เผื่อไม่มีแอป → ไป Play Store ของแอป
+      setTimeout(()=>{ location.href = `https://play.google.com/store/apps/details?id=${PKG}`; }, 1200);
+    } else if (isIOS) {
+      // iOS ต้องใช้ user gesture อยู่แล้ว: ยิง custom scheme
+      const t0 = Date.now();
+      const iframe = document.createElement('iframe');
+      iframe.style.display = 'none';
+      iframe.src = schemeUrl();
+      document.body.appendChild(iframe);
+      // ถ้าไม่เด้งภายใน ~1s → App Store หรือเว็บ
+      setTimeout(()=>{ location.href = IOS_APP_STORE; }, 1000);
+    } else {
+      // desktop → เปิดเว็บ
+      location.href = WEB_URL;
+    }
+  }
+
+  function openInBrowser() {
+    if (isAndroid && isInApp) {
+      // โยนไป Chrome
+      location.href = androidChromeIntent(location.href);
+      setTimeout(()=>{ /* fallback */ }, 1200);
+    } else {
+      // iOS: แจ้งวิธีเปิดใน Safari
+      document.getElementById('tips').textContent = "บน iPhone ให้แตะ ⋯ หรือ แชร์ แล้วเลือก 'เปิดใน Safari'";
+      alert("บน iPhone ให้แตะ ⋯ หรือ แชร์ แล้วเลือก 'Open in Safari'");
+    }
+  }
+
+  // bind
+  document.getElementById('openApp').addEventListener('click', openInApp);
+  document.getElementById('openBrowser').addEventListener('click', openInBrowser);
+</script>
 </body>
 </html>
