@@ -3,88 +3,110 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>ReadAWrite</title>
+<title>เปิดด้วยแอป ReadAWrite</title>
 <meta name="robots" content="noindex,nofollow">
 <style>
   :root{color-scheme:light dark}
   *{box-sizing:border-box}
-  body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;background:#fff;color:#111}
-  .wrap{min-height:100dvh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px}
-  .hero{max-width:420px;width:100%;text-align:center;margin:auto}
-  .logo{font-weight:800;letter-spacing:.5px;font-size:12px;color:#9ca3af;margin-bottom:8px}
-  h1{font-size:40px;letter-spacing:1px;margin:0 0 8px;text-transform:uppercase}
-  .sub{color:#6b7280;line-height:1.5;margin-bottom:24px}
-  .phone{width:210px;height:210px;margin:8px auto 24px;display:block}
-  .btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+  html,body{height:100%}
+  body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial;background:#fff;color:#0b1220}
+  .wrap{min-height:100dvh;display:flex;align-items:center;justify-content:center;padding:24px}
+  .card{max-width:720px;width:100%;border-radius:20px;border:1px solid #e5e7eb;padding:28px 20px;box-shadow:0 10px 30px rgba(0,0,0,.06)}
+  .brand{font-weight:800;letter-spacing:.4px;color:#94a3b8;font-size:12px}
+  h1{margin:4px 0 8px;font-size:34px;letter-spacing:.5px}
+  .desc{color:#64748b;margin:0 0 14px}
+  .hero{display:flex;gap:16px;align-items:center;justify-content:center;margin:10px 0 22px}
+  .phone{width:220px;height:220px;flex:0 0 auto}
+  .btns{display:flex;flex-wrap:wrap;gap:12px;justify-content:center}
   a.btn,button.btn{flex:1 1 220px;max-width:280px;border-radius:12px;border:2px solid #16a34a;
-    font-weight:800;padding:14px 16px;text-align:center;text-decoration:none;cursor:pointer}
+    padding:14px 16px;font-weight:800;text-decoration:none;text-align:center;cursor:pointer}
   .primary{background:#16a34a;color:#fff}
   .ghost{background:#fff;color:#16a34a}
-  .hint{margin-top:18px;font-size:13px;color:#6b7280;text-align:center;max-width:520px}
-  .foot{position:fixed;left:0;right:0;bottom:0;padding:8px 16px;text-align:center;color:#9ca3af;font-size:12px}
+  .line{height:1px;background:#e5e7eb;margin:16px 0}
+  .hint{font-size:13px;color:#64748b;text-align:center}
+  .foot{margin-top:8px;text-align:center;font-size:12px;color:#94a3b8}
+  .mini{display:flex;gap:10px;justify-content:center;margin-top:10px}
+  .mini .btn{border-color:#cbd5e1;color:#475569}
+  @media (max-width:560px){ .hero{flex-direction:column} .phone{width:180px;height:180px} }
   @media (prefers-color-scheme:dark){
     body{background:#0b0b0b;color:#e5e7eb}
-    .sub,.hint{color:#9ca3af}
+    .card{border-color:#1f2937;box-shadow:0 10px 30px rgba(0,0,0,.35)}
+    .desc,.hint{color:#9aa4b2}
     .ghost{background:transparent}
+    .line{background:#1f2937}
+    .mini .btn{border-color:#334155;color:#cbd5e1}
   }
 </style>
 </head>
 <body>
 <div class="wrap">
-  <div class="hero">
-    <div class="logo">readawrite.com</div>
-    <h1>READAWRITE</h1>
-    <div class="sub">ลองเปิดเรื่องนี้ในแอป ReadAWrite ได้ทันที ไม่ต้องคัดลอกลิงก์</div>
+  <div class="card">
+    <div class="brand">readawrite.com</div>
+    <h1>เปิดด้วยแอป ReadAWrite</h1>
+    <p class="desc">ถ้าเปิดจาก Facebook/LINE แล้วไม่เด้ง ให้เลือก “เปิดด้วยเบราว์เซอร์หลัก” ก่อน จากนั้นกด “เปิดในแอป” อีกครั้ง</p>
 
-    <!-- ภาพประกอบแนว LINEGIFT (SVG เบา ๆ) — เปลี่ยนเป็นรูปของคุณได้ -->
-    <svg class="phone" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-      <rect x="55" y="25" width="90" height="150" rx="16" stroke="#111827" stroke-width="4"/>
-      <circle cx="100" cy="100" r="28" fill="#16a34a"/>
-      <path d="M100 84v32M84 100h32" stroke="#fff" stroke-width="6" stroke-linecap="round"/>
-    </svg>
+    <div class="hero">
+      <!-- SVG ภาพมือถือ (เปลี่ยนเป็นรูปของคุณได้) -->
+      <svg class="phone" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <rect x="55" y="25" width="90" height="150" rx="16" stroke="#111827" stroke-width="4"/>
+        <circle cx="100" cy="100" r="28" fill="#16a34a"/>
+        <path d="M100 84v32M84 100h32" stroke="#fff" stroke-width="6" stroke-linecap="round"/>
+      </svg>
+    </div>
 
     <div class="btns">
       <a id="openApp" class="btn primary" rel="noopener">เปิดในแอป</a>
       <a id="getApp"  class="btn ghost"   rel="noopener">ดาวน์โหลดแอป</a>
     </div>
 
-    <div id="hint" class="hint"></div>
+    <div class="mini">
+      <button id="copyBtn" class="btn" type="button">คัดลอกลิงก์</button>
+      <a id="openWeb" class="btn" target="_blank" rel="noopener">เปิดด้วยเบราว์เซอร์หลัก</a>
+    </div>
+
+    <div id="hint" class="hint" style="min-height:40px;margin-top:12px"></div>
+    <div class="line"></div>
+    <div class="foot">ทำงานได้ทั้ง Android และ iOS พร้อม fallback อัตโนมัติ</div>
   </div>
 </div>
-<div class="foot">ถ้าอยู่ใน Facebook/LINE แล้วไม่เด้ง ให้ “เปิดด้วยเบราว์เซอร์หลัก” ก่อน</div>
 
 <script>
-/* ---------- CONFIG ---------- */
+/* ===================== CONFIG ===================== */
 const SCHEME = "readawrite";
 const ANDROID_PKG = "com.readawrite";
-const PLAY = "https://play.google.com/store/apps/details?id=" + ANDROID_PKG;
+const PLAY = "https://play.google.com/store/apps/details?id="+ANDROID_PKG;
 const APPSTORE = "https://apps.apple.com/th/app/readawrite/id1033832353";
+const DEFAULT_PATH = "a/512604c87af04b0b7d3d02f31a2289be"; // เปลี่ยนได้
 
-/* รับปลายทางจาก ?path=  หรือ ?url=  */
+/* ===== รับปลายทางจากพารามิเตอร์ =====
+   รองรับ ?path=a/<id> หรือ ?url=https://www.readawrite.com/a/<id> */
 const qs = new URLSearchParams(location.search);
-let PATH = (qs.get("path") || "").replace(/^\/+/, "");
+let PATH = (qs.get("path")||"").replace(/^\/+/, "");
 const RAW_URL = qs.get("url");
-const DEFAULT_PATH = "a/512604c87af04b0b7d3d02f31a2289be"; // แก้ค่าเริ่มต้นได้
 if (!PATH && RAW_URL) { try { PATH = new URL(RAW_URL).pathname.replace(/^\/+/, ""); } catch {} }
 if (!PATH) PATH = DEFAULT_PATH;
-const WEB = "https://www.readawrite.com/" + PATH;
 
-/* ---------- Env detect ---------- */
+const WEB = "https://www.readawrite.com/"+PATH;
+const WEB_ENCODED = encodeURIComponent(WEB);
+
+/* ===================== ENV DETECT ===================== */
 const ua = navigator.userAgent||"";
-const isAndroid=/Android/i.test(ua);
-const isIOS=/iPhone|iPad|iPod/i.test(ua);
-const isFB=/\bFBAN|FBAV\b/i.test(ua);
-const isLINE=/Line/i.test(ua);
-const isIG=/Instagram/i.test(ua);
-const isInApp=isFB||isLINE||isIG;
+const isAndroid = /Android/i.test(ua);
+const isIOS     = /iPhone|iPad|iPod/i.test(ua);
+const isFB      = /\bFBAN|FBAV\b/i.test(ua);
+const isLINE    = /Line/i.test(ua);
+const isIG      = /Instagram/i.test(ua);
+const isInApp   = isFB || isLINE || isIG;
 
-/* ---------- Elements ---------- */
+/* ===================== ELEMENTS ===================== */
 const $ = s=>document.querySelector(s);
-const openBtn = $("#openApp");
-const getBtn  = $("#getApp");
-const hintEl  = $("#hint");
+const openBtn  = $("#openApp");
+const getBtn   = $("#getApp");
+const openWeb  = $("#openWeb");
+const copyBtn  = $("#copyBtn");
+const hintEl   = $("#hint");
 
-/* เมื่อแอปเปิดจริง หน้า web จะเป็น hidden → ยกเลิก fallback */
+/* ===================== HELPERS ===================== */
 function guard(onTimeout, ms){
   let done=false;
   const t=setTimeout(()=>{ if(!done){ done=true; cleanup(); onTimeout(); } }, ms);
@@ -93,46 +115,73 @@ function guard(onTimeout, ms){
   document.addEventListener("visibilitychange", vis);
 }
 
-/* ตั้งค่าปุ่ม “ดาวน์โหลดแอป” ตามแพลตฟอร์ม */
-getBtn.href = isIOS ? APPSTORE : PLAY;
+const makeIntent = () =>
+  `intent://${PATH}#Intent;scheme=${SCHEME};package=${ANDROID_PKG};`+
+  `S.browser_fallback_url=${encodeURIComponent(WEB)};end`;
 
-/* ตั้งค่าปุ่ม “เปิดในแอป” ให้เป็น <a> ที่ FB/LINE ยอมให้กดได้ */
+/* ===================== INIT LINKS ===================== */
+getBtn.href = isIOS ? APPSTORE : PLAY;
+openWeb.href = WEB;
+
+/* ===== ปุ่มคัดลอกลิงก์ ===== */
+copyBtn.addEventListener("click", async () => {
+  try {
+    await navigator.clipboard.writeText(WEB);
+    copyBtn.textContent = "คัดลอกแล้ว ✓";
+    setTimeout(()=> copyBtn.textContent="คัดลอกลิงก์", 1400);
+  } catch {
+    alert("คัดลอกไม่สำเร็จ ลองกดค้างที่ลิงก์เพื่อคัดลอกด้วยตัวเอง");
+  }
+});
+
+/* ===== ปุ่ม เปิดในแอป (บังคับ top-level → ให้ FB/LINE โชว์กล่องยืนยัน) ===== */
 if (isAndroid) {
-  openBtn.href =
-    `intent://${PATH}`+
-    `#Intent;scheme=${SCHEME};package=${ANDROID_PKG};`+
-    `S.browser_fallback_url=${encodeURIComponent(WEB)};end`;
+  openBtn.href = makeIntent(); // เผื่อเบราว์เซอร์ทั่วไป
+  openBtn.addEventListener("click",(e)=>{
+    e.preventDefault();
+    // พยายามเปิดสคีมแบบ top-level (ถ้า FB/LINE → โชว์กล่องยืนยันแน่นอน)
+    guard(()=>{ location.href = WEB; }, 1400);
+    try{ location.href = `${SCHEME}://${PATH}`; }catch(_){}
+    // เติม intent อีกชั้น เผื่อบางรุ่น/รอม
+    setTimeout(()=>{ try{ location.href = makeIntent(); }catch(_){ } }, 150);
+  });
+
+  if (isInApp) {
+    hintEl.textContent = "กำลังเปิดแอป… ถ้าไม่เด้ง กดยืนยันในป๊อปอัปของ Facebook/LINE หรือแตะ ‘เปิดด้วยเบราว์เซอร์หลัก’ ก่อน";
+  } else {
+    hintEl.textContent = "กำลังพยายามเปิดในแอปอัตโนมัติ…";
+    // auto-launch บน Chrome/เบราว์เซอร์หลัก เพื่อประสบการณ์ที่ลื่น
+    setTimeout(()=>{
+      guard(()=>{ location.href = WEB; }, 1200);
+      try{ location.href = `${SCHEME}://${PATH}`; }catch(_){}
+    }, 350);
+  }
+
 } else if (isIOS) {
   openBtn.href = `${SCHEME}://${PATH}`;
-  openBtn.addEventListener("click", ()=> { guard(()=>{ location.href = APPSTORE; }, 1000); });
-} else {
-  openBtn.href = WEB; // desktop
-}
-
-/* ถ้าอยู่ใน FB/LINE/IG บน Android → แนะนำให้ออกจาก in‑app ก่อน */
-if (isAndroid && isInApp) {
-  openBtn.addEventListener("click", (e)=>{
-    // กันบางรุ่นที่บล็อก scheme/intent → พาไปเว็บก่อน
+  openBtn.addEventListener("click",(e)=>{
     e.preventDefault();
-    try { window.open(WEB, "_blank", "noopener"); } catch(e){}
-    setTimeout(()=>{ location.href = WEB; }, 120);
+    guard(()=>{ location.href = APPSTORE; }, 1200);
+    try{ location.href = `${SCHEME}://${PATH}`; }catch(_){}
   });
-  hintEl.textContent = "Facebook/LINE บล็อกการเปิดแอปโดยตรง ให้เปิดลิงก์ใน Chrome ก่อน แล้วค่อยกด ‘เปิดในแอป’";
-} else if (isIOS && isInApp) {
-  hintEl.textContent = "บน iPhone: แตะ ⋯ หรือ แชร์ แล้วเลือก ‘เปิดใน Safari’ จากนั้นกด ‘เปิดในแอป’";
-} else {
-  // นอก in‑app: auto‑launch เพื่อความลื่น
-  hintEl.textContent = "กำลังพยายามเปิดในแอปอัตโนมัติ…";
-  setTimeout(()=>{
-    if (isAndroid) {
-      guard(()=>{ location.href = PLAY; }, 1200);
-      location.href = `${SCHEME}://${PATH}`; // auto แบบ scheme ตรง ลื่นสุดบน Chrome
-    } else if (isIOS) {
+
+  if (isInApp) {
+    hintEl.textContent = "บน iPhone: แตะ ⋯ หรือ แชร์ แล้วเลือก ‘เปิดใน Safari’ จากนั้นกด ‘เปิดในแอป’";
+  } else {
+    hintEl.textContent = "กำลังพยายามเปิดในแอปอัตโนมัติ…";
+    // iOS: ใช้ iframe trick (บาง Safari ยังต้องการ)
+    setTimeout(()=>{
       guard(()=>{ location.href = APPSTORE; }, 1000);
       const ifr=document.createElement("iframe");
       ifr.style.display="none"; ifr.src=`${SCHEME}://${PATH}`; document.body.appendChild(ifr);
-    }
-  }, 350);
+      setTimeout(()=>{ try{ document.body.removeChild(ifr); }catch(_){ } }, 1600);
+    }, 350);
+  }
+
+} else {
+  // Desktop
+  openBtn.href = WEB;
+  hintEl.textContent = "คุณใช้งานบนเดสก์ท็อป จะเปิดหน้าบนเว็บแทน";
 }
 </script>
 </body>
